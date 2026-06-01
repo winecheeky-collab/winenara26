@@ -987,8 +987,8 @@ document.getElementById('save-edit-hol-btn').addEventListener('click',saveEditHo
 document.getElementById('del-edit-hol-btn').addEventListener('click',async()=>{
   if(!editHolId)return;
   const h=holidays.find(x=>x.id===editHolId);
-  if(!confirm('"'+(h?h.name:'')+'"
-삭제하시겠습니까?'))return;
+      if(!confirm('\'' + (h ? h.name : '') + '\' 삭제하시겠습니까?'))return;
+
   await db.ref('holidays/'+editHolId).remove();
   addLog('['+curUser.name+'] 공휴일 삭제: '+(h?h.name:''));
   document.getElementById('edit-hol-modal').classList.remove('open');
