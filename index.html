@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>와인나라 매장 영업시간 관리</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f8f6;color:#1a1a1a;font-size:14px}
+.wrap{max-width:960px;margin:0 auto;padding:1.5rem 1rem}
+.hd{padding:1rem 0 .9rem;border-bottom:1px solid #e5e5e0;margin-bottom:1.1rem;display:flex;align-items:center;justify-content:space-between}
+.hd h1{font-size:17px;font-weight:600;display:flex;align-items:center;gap:7px}
+.hd p{font-size:11px;color:#888;margin-top:2px}
+.upill{display:flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid #e5e5e0;border-radius:20px;font-size:12px;color:#666;background:#fff}
+.lout{background:#fff;border:1px solid #e5e5e0;cursor:pointer;color:#666;font-size:12px;padding:5px 10px;border-radius:8px}
+.lout:hover{background:#f0f0ee}
+.tabs{display:flex;margin-bottom:1.1rem;border-bottom:1px solid #e5e5e0;background:#fff;border-radius:10px 10px 0 0;overflow:hidden}
+.tab{padding:10px 14px;font-size:12px;cursor:pointer;color:#888;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-weight:500}
+.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:600}
+.tab:hover:not(.active){color:#1a1a1a}
+.sec{display:none}.sec.active{display:block}
+.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.1rem}
+.met{background:#fff;border-radius:10px;padding:.8rem;text-align:center;border:1px solid #e5e5e0}
+.mn{font-size:22px;font-weight:600}.ml{font-size:11px;color:#888;margin-top:2px}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:10px}
+.sc{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:.9rem 1rem}
+.sc:hover{border-color:#bbb;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.sc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sn{font-weight:600;font-size:13px;display:flex;align-items:center;gap:5px}
+.bdg{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
+.bo{background:#d4edda;color:#1a5c2a}.bc2{background:#fde8e8;color:#8b1a1a}.bm{background:#fff3cd;color:#7d5a00}.bad{background:#d0e8ff;color:#0d3d7a}
+.hr{display:flex;justify-content:space-between;padding:3px 0;font-size:11px;border-bottom:1px solid #f0f0ee}
+.hr:last-child{border:none}.dl{color:#999;width:30px;flex-shrink:0}
+.hol-section{margin-top:7px;padding-top:7px;border-top:1px solid #f0f0ee}
+.hol-section-label{font-size:10px;color:#999;margin-bottom:4px;font-weight:600}
+.hol-row{display:flex;align-items:center;padding:3px 0;font-size:11px;border-bottom:1px solid #f5f5f3;gap:5px}
+.hol-row:last-child{border:none}
+.hol-chip{display:inline-flex;align-items:center;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600;flex-shrink:0}
+.hol-chip.cl{background:#fde8e8;color:#8b1a1a}.hol-chip.cm{background:#fff3cd;color:#7d5a00}.hol-chip.co{background:#d4edda;color:#1a5c2a}
+.eb{font-size:11px;padding:4px 9px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:#fff;color:#666}
+.eb:hover{background:#f5f5f3}
+.eb.danger{color:#c0392b;border-color:#f5c6c6}.eb.danger:hover{background:#fde8e8}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.md{background:#fff;border-radius:14px;padding:1.4rem 1.5rem;width:540px;max-width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+.md h2{font-size:15px;font-weight:600;margin-bottom:1rem}
+.fr{margin-bottom:.75rem}
+.fr label{display:block;font-size:11px;color:#888;margin-bottom:3px;font-weight:500}
+.fr input,.fr select,.fr textarea{width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:#fff;color:#1a1a1a;font-family:inherit}
+.fr input:focus,.fr select:focus,.fr textarea:focus{outline:none;border-color:#888}
+.fr textarea{resize:vertical;min-height:60px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.br{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem}
+.bp{padding:8px 18px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600}
+.bp:hover{background:#333}
+.bcn{padding:8px 18px;background:#fff;color:#666;border:1px solid #ddd;border-radius:8px;font-size:13px;cursor:pointer}
+.bcn:hover{background:#f5f5f3}
+.day-row{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid #f0f0ee}
+.day-row:last-of-type{border:none}
+.day-chk{display:flex;align-items:center;gap:5px;min-width:68px;font-size:12px;font-weight:500}
+.day-chk input{width:14px;height:14px;cursor:pointer;accent-color:#1a1a1a}
+.tfl{display:flex;align-items:center;gap:6px;flex:1}
+.tfl input[type=time]{padding:4px 8px;font-size:12px;border:1px solid #ddd;border-radius:7px;background:#fff;color:#1a1a1a;width:88px;font-family:inherit}
+.tfl select{font-size:12px;padding:4px 7px;border:1px solid #ddd;border-radius:7px;background:#fff;color:#1a1a1a;font-family:inherit}
+.mn-nav{display:flex;align-items:center;gap:10px;margin-bottom:.9rem}
+.mn-nav button{padding:4px 10px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:#fff;color:#666;font-size:13px}
+.mn-nav button:hover{background:#f5f5f3}
+.mn-title{font-size:15px;font-weight:600;min-width:90px;text-align:center}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cdow{text-align:center;font-size:11px;color:#999;padding:4px 0;font-weight:600}
+.cday{min-height:62px;border:1px solid #e5e5e0;border-radius:8px;padding:4px;background:#fff;cursor:pointer}
+.cday:hover{border-color:#999}
+.cday.empty{background:none;border-color:transparent;cursor:default}
+.cday.today{border-color:#1a56a0;background:#f0f6ff}
+.cday.sel-hol{border-color:#6c5ce7;background:#f0eeff}
+.cdn{font-size:11px;font-weight:600;color:#999;margin-bottom:2px}
+.ctag{font-size:9px;padding:1px 4px;border-radius:3px;display:block;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.ctag.cl{background:#fde8e8;color:#8b1a1a}.ctag.cm{background:#fff3cd;color:#7d5a00}.ctag.co{background:#d4edda;color:#1a5c2a}
+.cday.has-hol{background:#fafaf8;border-color:#ddd}
+.cday.has-hol:hover{border-color:#6c5ce7;background:#f0eeff}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{padding:3px 10px;border:1px solid #ddd;border-radius:20px;font-size:11px;cursor:pointer;background:#fff;color:#666;font-weight:500}
+.chip.sel{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.ht{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.ht th{text-align:left;padding:7px 8px;background:#f8f8f6;color:#888;font-weight:600;border-bottom:1px solid #e5e5e0}
+.ht td{padding:7px 8px;border-bottom:1px solid #f0f0ee;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ht tr:last-child td{border:none}
+.ht tr:hover td{background:#fafaf8}
+.ab{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid #ddd;border-radius:8px;cursor:pointer;background:#fff;color:#666;font-size:12px;margin-top:10px;font-weight:500}
+.ab:hover{background:#f5f5f3}
+.li{padding:8px 0;border-bottom:1px solid #f0f0ee;font-size:12px;display:flex;gap:10px;align-items:flex-start}
+.lt{color:#999;min-width:110px;font-size:10px;margin-top:1px;flex-shrink:0}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:8px 18px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9999;white-space:nowrap;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.toast.show{opacity:1}
+.lwrap{max-width:340px;margin:3rem auto;background:#fff;border:1px solid #e5e5e0;border-radius:14px;padding:1.8rem;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.lwrap h2{font-size:16px;font-weight:600;margin-bottom:4px}
+.lwrap p{font-size:12px;color:#888;margin-bottom:1.2rem}
+.usr-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f0ee;font-size:12px}
+.usr-row:last-child{border:none}
+.sec-label{font-size:11px;color:#888;font-weight:600;margin:.8rem 0 .4rem;display:flex;align-items:center;gap:5px}
+.hol-sec{margin-bottom:1.3rem}
+.hol-sec-title{font-size:13px;font-weight:600;padding:.5rem 0;border-bottom:1px solid #e5e5e0;margin-bottom:.5rem;display:flex;align-items:center;gap:5px}
+.pick-info{font-size:11px;color:#6c5ce7;background:#f0eeff;padding:6px 11px;border-radius:8px;margin-bottom:.6rem;display:flex;align-items:center;gap:5px;font-weight:500}
+.hol-inline{display:flex;align-items:center;gap:6px;padding:6px 0;font-size:11px;border-bottom:1px solid #f0f0ee;flex-wrap:wrap}
+.hol-inline:last-child{border:none}
+.loading{text-align:center;padding:3rem;color:#999;font-size:13px}
+.hol-overview{background:#fff;border:1px solid #e5e5e0;border-radius:12px;overflow:hidden;margin-bottom:1.2rem}
+.hol-overview-title{font-size:13px;font-weight:600;padding:.8rem 1rem;border-bottom:1px solid #e5e5e0;background:#f8f8f6;display:flex;align-items:center;gap:6px}
+.hov-table{width:100%;border-collapse:collapse;font-size:11px}
+.hov-table th{padding:6px 8px;background:#f0f0ee;color:#888;font-weight:600;text-align:left;border-bottom:1px solid #e5e5e0;white-space:nowrap}
+.hov-table td{padding:6px 8px;border-bottom:1px solid #f5f5f3;vertical-align:middle}
+.hov-table tr:last-child td{border:none}
+.hov-table tr:hover td{background:#fafaf8}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div id="login-screen">
+  <div class="lwrap">
+    <h2>🍷 와인나라 매장 관리</h2>
+    <p>계정으로 로그인하세요</p>
+    <div class="fr"><label>아이디</label><input type="text" id="li-id" autocomplete="username" placeholder="아이디 입력"></div>
+    <div class="fr"><label>비밀번호</label><input type="password" id="li-pw" autocomplete="current-password" placeholder="비밀번호 입력"></div>
+    <button class="bp" style="width:100%;margin-top:.3rem;padding:10px" id="login-btn">로그인</button>
+    <div id="lerr" style="font-size:12px;color:#c0392b;margin-top:8px;text-align:center"></div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="hd">
+    <div><h1>🍷 와인나라 매장 영업시간 관리</h1><p id="subtitle-txt">8개 지점 공유</p></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="upill"><i class="ti ti-user" style="font-size:13px"></i><span id="uname"></span><span id="urole"></span></div>
+      <button class="lout" id="logout-btn"><i class="ti ti-logout" style="font-size:13px;vertical-align:-2px"></i> 로그아웃</button>
+    </div>
+  </div>
+  <div class="sum" id="sum-bar">
+    <div class="met"><div class="mn" id="m0">-</div><div class="ml">전체 지점</div></div>
+    <div class="met"><div class="mn" id="m1" style="color:#1a5c2a">-</div><div class="ml">정상영업</div></div>
+    <div class="met"><div class="mn" id="m2" style="color:#7d5a00">-</div><div class="ml">시간변경</div></div>
+    <div class="met"><div class="mn" id="m3" style="color:#8b1a1a">-</div><div class="ml">휴무</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="stores"><i class="ti ti-clock" style="font-size:12px;vertical-align:-2px"></i> 지점 영업시간</button>
+    <button class="tab" data-tab="log"><i class="ti ti-history" style="font-size:12px;vertical-align:-2px"></i> 변경 이력</button>
+    <button class="tab" id="tab-hol-btn" style="display:none" data-tab="holidays"><i class="ti ti-calendar" style="font-size:12px;vertical-align:-2px"></i> 공휴일·연휴</button>
+    <button class="tab" id="tab-acct-btn" style="display:none" data-tab="accounts"><i class="ti ti-users" style="font-size:12px;vertical-align:-2px"></i> 계정 관리</button>
+  </div>
+  <div id="tab-stores" class="sec active"><div id="store-grid" class="sg"><div class="loading">데이터 불러오는 중...</div></div></div>
+  <div id="tab-log" class="sec">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;flex-wrap:wrap;gap:6px">
+      <span style="font-size:13px;font-weight:600">변경 이력</span>
+      <div id="log-admin-btns" style="display:none;align-items:center;gap:6px">
+        <button class="eb" id="select-all-log-btn" style="font-size:11px"><i class="ti ti-checkbox" style="font-size:11px"></i> 전체 선택</button>
+        <button class="eb danger" id="del-sel-log-btn"><i class="ti ti-trash" style="font-size:11px"></i> 선택 삭제</button>
+        <button class="eb danger" id="clear-log-btn"><i class="ti ti-trash" style="font-size:11px"></i> 전체 삭제</button>
+      </div>
+    </div>
+    <div id="log-list"></div>
+  </div>
+  <div id="tab-holidays" class="sec">
+    <div class="hol-overview" id="hol-overview-wrap">
+      <div class="hol-overview-title"><i class="ti ti-table" style="font-size:13px"></i> 공휴일·임시공휴일 영업 현황 (전 지점) — <span id="hov-month-label"></span></div>
+      <div style="overflow-x:auto"><table class="hov-table" id="hov-table"></table></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:.9rem">
+      <div class="mn-nav">
+        <button id="prev-month"><i class="ti ti-chevron-left"></i></button>
+        <span class="mn-title" id="mtitle"></span>
+        <button id="next-month"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <div style="display:flex;gap:5px">
+        <button class="eb" id="vca"><i class="ti ti-calendar" style="font-size:11px"></i> 달력</button>
+        <button class="eb" id="vli"><i class="ti ti-layout-list" style="font-size:11px"></i> 목록</button>
+      </div>
+    </div>
+    <div id="hol-body"></div>
+    <button class="ab" id="add-hol-btn"><i class="ti ti-plus"></i> 공휴일·연휴·임시공휴일 추가</button>
+  </div>
+  <div id="tab-accounts" class="sec">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.9rem">
+      <span style="font-size:14px;font-weight:600">계정 목록</span>
+      <button class="ab" style="margin-top:0" id="add-acct-btn"><i class="ti ti-plus"></i> 계정 추가</button>
+    </div>
+    <div class="sec-label"><i class="ti ti-shield" style="font-size:12px"></i> 관리자 계정</div>
+    <div id="admin-list"></div>
+    <div class="sec-label" style="margin-top:.9rem"><i class="ti ti-user" style="font-size:12px"></i> 일반 직원 계정</div>
+    <div id="staff-list"></div>
+  </div>
+</div>
+
+<!-- 영업시간 수정 모달 -->
+<div class="overlay" id="em-modal">
+  <div class="md">
+    <h2 id="em-title">영업시간 수정</h2>
+    <div class="fr"><label>지점명 수정</label>
+      <div style="display:flex;gap:6px"><input type="text" id="f-store-name" style="flex:1"><button class="eb" id="rename-btn" style="white-space:nowrap">이름 저장</button></div>
+    </div>
+    <div style="font-size:11px;color:#999;margin-bottom:.5rem;font-weight:500">요일별 영업시간 (체크한 요일만 수정)</div>
+    <div id="day-rows"></div>
+    <div style="margin-top:.8rem;padding-top:.8rem;border-top:1px solid #f0f0ee">
+      <div style="font-size:12px;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between">
+        <span>공휴일·임시공휴일 영업 설정</span>
+        <button class="eb" id="pick-btn"><i class="ti ti-calendar" style="font-size:11px"></i> 달력에서 날짜 추가</button>
+      </div>
+      <div id="pick-info" class="pick-info" style="display:none"><i class="ti ti-calendar-check" style="font-size:12px"></i> 날짜를 클릭하면 임시공휴일로 추가됩니다</div>
+      <div id="hol-mini-cal" style="display:none;margin-bottom:.6rem"></div>
+      <div id="sel-hol-rows"></div>
+    </div>
+    <div class="fr" style="margin-top:.6rem"><label>변경 사유</label><textarea id="f-reason" placeholder="예) 추석 연휴로 인한 영업시간 조정"></textarea></div>
+    <div class="br"><button class="bcn" id="close-em-btn">취소</button><button class="bp" id="save-store-btn">저장</button></div>
+  </div>
+</div>
+
+<!-- 공휴일 추가 모달 -->
+<div class="overlay" id="hm-modal">
+  <div class="md">
+    <h2>공휴일·연휴·임시공휴일 추가</h2>
+    <div class="fg">
+      <div class="fr"><label>시작 날짜</label><input type="date" id="hf-s"></div>
+      <div class="fr"><label>종료 날짜 (연휴 시)</label><input type="date" id="hf-e"></div>
+    </div>
+    <div class="fg">
+      <div class="fr"><label>이름</label><input type="text" id="hf-name" placeholder="예) 추석 연휴"></div>
+      <div class="fr"><label>유형</label><select id="hf-type"><option>공휴일</option><option>대체공휴일</option><option>연휴</option><option>임시공휴일</option></select></div>
+    </div>
+    <div class="fr"><label>적용 지점 (복수 선택)</label><div class="chips" id="hf-chips"></div></div>
+    <p style="font-size:11px;color:#888;background:#f8f8f6;padding:8px 10px;border-radius:8px;margin-bottom:.5rem"><i class="ti ti-info-circle" style="font-size:12px;vertical-align:-2px"></i> 영업여부는 각 매장 담당자가 직접 설정합니다.</p>
+    <div class="br"><button class="bcn" id="close-hm-btn">취소</button><button class="bp" id="save-hol-btn">저장</button></div>
+  </div>
+</div>
+
+<!-- 공휴일 수정 모달 -->
+<div class="overlay" id="edit-hol-modal">
+  <div class="md" style="max-width:440px">
+    <h2>공휴일·임시공휴일 수정</h2>
+    <div class="fr"><label>이름</label><input type="text" id="eh-name"></div>
+    <div class="fg">
+      <div class="fr"><label>시작 날짜</label><input type="date" id="eh-start"></div>
+      <div class="fr"><label>종료 날짜</label><input type="date" id="eh-end"></div>
+    </div>
+    <div class="fr"><label>유형</label><select id="eh-type"><option>공휴일</option><option>대체공휴일</option><option>연휴</option><option>임시공휴일</option></select></div>
+    <div class="fr"><label>적용 지점</label><div class="chips" id="eh-chips"></div></div>
+    <p style="font-size:11px;color:#888;background:#f8f8f6;padding:8px 10px;border-radius:8px;margin-bottom:.5rem"><i class="ti ti-info-circle" style="font-size:12px;vertical-align:-2px"></i> 영업여부는 각 매장 담당자가 직접 설정합니다.</p>
+    <div class="br">
+      <button class="bcn" id="close-edit-hol-btn">취소</button>
+      <button class="bp" style="background:#c0392b" id="del-edit-hol-btn">🗑️ 삭제</button>
+      <button class="bp" id="save-edit-hol-btn">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 지점 삭제 모달 -->
+<div class="overlay" id="del-modal">
+  <div class="md" style="max-width:380px">
+    <h2>⚠️ 지점 삭제 확인</h2>
+    <p style="font-size:13px;color:#666;margin-bottom:.9rem" id="del-msg"></p>
+    <p style="font-size:12px;color:#8b1a1a;background:#fde8e8;padding:.7rem;border-radius:8px">이 작업은 되돌릴 수 없습니다.</p>
+    <div class="br"><button class="bcn" id="close-del-btn">취소</button><button class="bp" style="background:#c0392b" id="conf-del-btn">삭제 확인</button></div>
+  </div>
+</div>
+
+<!-- 계정 추가 모달 -->
+<div class="overlay" id="acct-modal">
+  <div class="md" style="max-width:400px">
+    <h2>계정 추가</h2>
+    <div class="fr"><label>아이디</label><input type="text" id="ac-id"></div>
+    <div class="fr"><label>비밀번호</label><input type="password" id="ac-pw"></div>
+    <div class="fr"><label>이름</label><input type="text" id="ac-name"></div>
+    <div class="fr"><label>권한</label><select id="ac-role"><option value="staff">일반 직원</option><option value="admin">관리자</option></select></div>
+    <div class="fr" id="ac-store-wrap"><label>담당 지점</label><select id="ac-store"></select></div>
+    <div class="br"><button class="bcn" id="close-am-btn">취소</button><button class="bp" id="save-acct-btn">저장</button></div>
+  </div>
+</div>
+
+<!-- 계정 수정 모달 -->
+<div class="overlay" id="edit-acct-modal">
+  <div class="md" style="max-width:400px">
+    <h2 id="edit-acct-title">계정 수정</h2>
+    <div class="fr"><label>아이디</label><input type="text" id="ea-id" readonly style="color:#999;background:#f8f8f6"></div>
+    <div class="fr"><label>이름</label><input type="text" id="ea-name"></div>
+    <div class="fr"><label>새 비밀번호 <span style="font-weight:400;color:#aaa">(변경 시에만 입력)</span></label><input type="password" id="ea-pw" placeholder="변경하지 않으려면 비워두세요"></div>
+    <div class="fr"><label>권한</label><select id="ea-role"><option value="staff">일반 직원</option><option value="admin">관리자</option></select></div>
+    <div class="fr" id="ea-store-wrap"><label>담당 지점</label><select id="ea-store"></select></div>
+    <div class="br"><button class="bcn" id="close-edit-acct-btn">취소</button><button class="bp" id="save-edit-acct-btn">저장</button></div>
+  </div>
+</div>
+
+<!-- 로그 삭제 모달 -->
+<div class="overlay" id="log-del-modal">
+  <div class="md" style="max-width:360px">
+    <h2>⚠️ 변경 이력 전체 삭제</h2>
+    <p style="font-size:13px;color:#666;margin-bottom:.9rem">모든 변경 이력을 삭제하시겠습니까?</p>
+    <div class="br"><button class="bcn" id="close-log-del-btn">취소</button><button class="bp" style="background:#c0392b" id="conf-log-del-btn">전체 삭제</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyDsBbYuPzAAxn5lf2i-j3BIWqFdtCaa-hc",
+  authDomain:"wine-tine-list.firebaseapp.com",
+  databaseURL:"https://wine-tine-list-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"wine-tine-list",
+  storageBucket:"wine-tine-list.firebasestorage.app",
+  messagingSenderId:"1076616474198",
+  appId:"1:1076616474198:web:4c8e297e5bc83ec184d5f7"
+});
+const db=firebase.database();
+const DAYS=['월','화','수','목','금','토','일'];
+const DWS=['일','월','화','수','목','금','토'];
+
+function mkSch(wo,wc,eo,ec){const s={};DAYS.forEach(d=>{const we=d==='토'||d==='일';s[d]={st:'open',o:we?eo:wo,c:we?ec:wc};});return s;}
+
+const DEFAULT_STORES=[
+  {id:'s1',name:'압구정점',schedule:mkSch('11:00','22:00','11:00','21:00')},
+  {id:'s2',name:'서래마을점',schedule:mkSch('12:00','22:00','12:00','22:00')},
+  {id:'s3',name:'코엑스점',schedule:mkSch('10:00','22:00','10:00','22:00')},
+  {id:'s4',name:'신용산점',schedule:mkSch('11:00','22:00','11:00','21:00')},
+  {id:'s5',name:'시청점',schedule:mkSch('10:00','21:00','11:00','20:00')},
+  {id:'s6',name:'송도점',schedule:mkSch('11:00','21:00','11:00','21:00')},
+  {id:'s7',name:'성수점',schedule:mkSch('12:00','22:00','12:00','22:00')},
+  {id:'s8',name:'경희궁점',schedule:mkSch('11:00','21:00','11:00','20:00')},
+];
+const DEFAULT_USERS={
+  admin1:{pw:'admin1234',name:'관리자 1',role:'admin',store:null},
+  admin2:{pw:'admin5678',name:'관리자 2',role:'admin',store:null},
+  staff1:{pw:'pass1234',name:'압구정점 담당',role:'staff',store:'압구정점'},
+  staff2:{pw:'pass1234',name:'서래마을점 담당',role:'staff',store:'서래마을점'},
+  staff3:{pw:'pass1234',name:'코엑스점 담당',role:'staff',store:'코엑스점'},
+  staff4:{pw:'pass1234',name:'신용산점 담당',role:'staff',store:'신용산점'},
+  staff5:{pw:'pass1234',name:'시청점 담당',role:'staff',store:'시청점'},
+  staff6:{pw:'pass1234',name:'송도점 담당',role:'staff',store:'송도점'},
+  staff7:{pw:'pass1234',name:'성수점 담당',role:'staff',store:'성수점'},
+  staff8:{pw:'pass1234',name:'경희궁점 담당',role:'staff',store:'경희궁점'},
+};
+const DEFAULT_HOLIDAYS=[
+  {id:'h2025_1',start:'2025-06-06',end:'2025-06-06',name:'현충일',type:'공휴일',stores:['전체']},
+  {id:'h2025_2',start:'2025-08-15',end:'2025-08-15',name:'광복절',type:'공휴일',stores:['전체']},
+  {id:'h2025_3',start:'2025-10-03',end:'2025-10-03',name:'개천절',type:'공휴일',stores:['전체']},
+  {id:'h2025_4',start:'2025-10-05',end:'2025-10-07',name:'추석 연휴',type:'연휴',stores:['전체']},
+  {id:'h2025_5',start:'2025-10-06',end:'2025-10-06',name:'추석 대체공휴일',type:'대체공휴일',stores:['전체']},
+  {id:'h2025_6',start:'2025-10-09',end:'2025-10-09',name:'한글날',type:'공휴일',stores:['전체']},
+  {id:'h2025_7',start:'2025-12-25',end:'2025-12-25',name:'크리스마스',type:'공휴일',stores:['전체']},
+  {id:'h2026_1',start:'2026-01-01',end:'2026-01-01',name:'신정',type:'공휴일',stores:['전체']},
+  {id:'h2026_2',start:'2026-01-28',end:'2026-01-30',name:'설날 연휴',type:'연휴',stores:['전체']},
+  {id:'h2026_3',start:'2026-03-01',end:'2026-03-01',name:'삼일절',type:'공휴일',stores:['전체']},
+  {id:'h2026_4',start:'2026-03-02',end:'2026-03-02',name:'삼일절 대체공휴일',type:'대체공휴일',stores:['전체']},
+  {id:'h2026_5',start:'2026-05-05',end:'2026-05-05',name:'어린이날',type:'공휴일',stores:['전체']},
+  {id:'h2026_6',start:'2026-05-24',end:'2026-05-24',name:'부처님오신날',type:'공휴일',stores:['전체']},
+  {id:'h2026_7',start:'2026-06-06',end:'2026-06-06',name:'현충일',type:'공휴일',stores:['전체']},
+  {id:'h2026_8',start:'2026-08-15',end:'2026-08-15',name:'광복절',type:'공휴일',stores:['전체']},
+  {id:'h2026_9',start:'2026-09-24',end:'2026-09-26',name:'추석 연휴',type:'연휴',stores:['전체']},
+  {id:'h2026_10',start:'2026-10-03',end:'2026-10-03',name:'개천절',type:'공휴일',stores:['전체']},
+  {id:'h2026_11',start:'2026-10-09',end:'2026-10-09',name:'한글날',type:'공휴일',stores:['전체']},
+  {id:'h2026_12',start:'2026-12-25',end:'2026-12-25',name:'크리스마스',type:'공휴일',stores:['전체']},
+];
+
+// ── 상태 ──────────────────────────────────────────────
+// stores[i].holSettings = { holId: {status,open,close} }
+// 공휴일별 매장 영업여부는 stores 안에 holSettings로 저장
+let stores=[],holidays=[],users={},auditLog=[];
+let curUser=null,editId=null,delId=null;
+let calY=new Date().getFullYear(),calM=new Date().getMonth(),hView='cal';
+let selSt=new Set(['전체']),pickMode=false,selHolDates=[];
+let miniY=new Date().getFullYear(),miniM=new Date().getMonth();
+let editHolId=null;
+
+// ── DB ────────────────────────────────────────────────
+async function initDB(){
+  const s=await db.ref('stores').once('value');
+  if(!s.exists()){const o={};DEFAULT_STORES.forEach(x=>o[x.id]=x);await db.ref('stores').set(o);}
+  const u=await db.ref('users').once('value');
+  if(!u.exists()) await db.ref('users').set(DEFAULT_USERS);
+  const h=await db.ref('holidays').once('value');
+  if(!h.exists()){const o={};DEFAULT_HOLIDAYS.forEach(x=>o[x.id]=x);await db.ref('holidays').set(o);}
+}
+function listenData(){
+  // stores에 holSettings 포함되어 있으므로 stores 리스너 하나로 모두 처리
+  db.ref('stores').on('value',snap=>{
+    stores=snap.exists()?Object.values(snap.val()).sort((a,b)=>a.id.localeCompare(b.id)):[];
+    if(curUser){renderStores();updSum();}
+  });
+  db.ref('holidays').on('value',snap=>{
+    holidays=snap.exists()?Object.values(snap.val()).sort((a,b)=>a.start.localeCompare(b.start)):[];
+    if(curUser){renderStores();if(curUser.role==='admin')renderHovTable();}
+  });
+  db.ref('users').on('value',snap=>{users=snap.exists()?snap.val():{};});
+  db.ref('log').on('value',snap=>{
+    auditLog=snap.exists()?Object.values(snap.val()).sort((a,b)=>a.ts-b.ts):[];
+    if(curUser)renderLog();
+  });
+}
+function addLog(msg){const ts=Date.now();db.ref('log/l'+ts).set({time:new Date().toLocaleString('ko-KR',{hour12:false}),msg,ts});}
+
+// ── 유틸 ──────────────────────────────────────────────
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function stLbl(v){return v==='open'?'정상영업':v==='closed'?'휴무':v==='modified'?'시간변경':'미설정';}
+function bdgHtml(st){return st==='open'?'<span class="bdg bo">정상영업</span>':st==='closed'?'<span class="bdg bc2">휴무</span>':'<span class="bdg bm">시간변경</span>';}
+function sst(s){const d=Object.values(s.schedule);if(d.every(x=>x.st==='closed'))return'closed';if(d.some(x=>x.st!=='open'))return'modified';return'open';}
+function visStores(){if(!curUser||curUser.role==='admin')return stores;return stores.filter(s=>s.name===curUser.store);}
+function dateRange(start,end){const ds=[];const c=new Date(start+'T00:00:00');const e=new Date(end+'T00:00:00');while(c<=e){ds.push(c.toISOString().slice(0,10));c.setDate(c.getDate()+1);}return ds;}
+
+// 공휴일의 이 매장 영업여부 가져오기
+function getHolSetting(store,holId){
+  return store&&store.holSettings&&store.holSettings[holId]||null;
+}
+
+// ── 로그인 ────────────────────────────────────────────
+function doLogin(){
+  const id=document.getElementById('li-id').value.trim();
+  const pw=document.getElementById('li-pw').value;
+  const u=users[id];
+  if(!u||u.pw!==pw){document.getElementById('lerr').textContent='아이디 또는 비밀번호가 올바르지 않습니다.';return;}
+  curUser={id,name:u.name,role:u.role,store:u.store||null};
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('uname').textContent=u.name+' ';
+  document.getElementById('urole').innerHTML=u.role==='admin'?'<span class="bdg bad">관리자</span>':'';
+  const isAdmin=u.role==='admin';
+  document.getElementById('tab-hol-btn').style.display=isAdmin?'':'none';
+  document.getElementById('tab-acct-btn').style.display=isAdmin?'':'none';
+  document.getElementById('sum-bar').style.display=isAdmin?'grid':'none';
+  document.getElementById('subtitle-txt').textContent=isAdmin?'8개 지점 공유 · 실시간 업데이트':(u.store||'담당 지점');
+  renderAll();
+}
+function doLogout(){
+  curUser=null;
+  document.getElementById('login-screen').style.display='block';
+  document.getElementById('app').style.display='none';
+  document.getElementById('li-id').value='';document.getElementById('li-pw').value='';document.getElementById('lerr').textContent='';
+  document.querySelectorAll('.sec').forEach((s,i)=>s.classList.toggle('active',i===0));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+}
+function swTab(t){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.querySelector('[data-tab="'+t+'"]').classList.add('active');
+  if(t==='holidays'){renderHovTable();renderHol();}
+  if(t==='accounts')renderAccts();
+}
+function renderAll(){renderStores();renderLog();updSum();}
+function updSum(){
+  const vis=visStores();
+  document.getElementById('m0').textContent=vis.length;
+  document.getElementById('m1').textContent=vis.filter(s=>sst(s)==='open').length;
+  document.getElementById('m2').textContent=vis.filter(s=>sst(s)==='modified').length;
+  document.getElementById('m3').textContent=vis.filter(s=>sst(s)==='closed').length;
+}
+
+// ── 이번 달 공휴일 (매장별 설정 포함) ─────────────────
+function getThisMonthHols(storeObj){
+  const today=new Date();
+  const y=today.getFullYear(),m=today.getMonth();
+  const mStart=y+'-'+String(m+1).padStart(2,'0')+'-01';
+  const mEnd=y+'-'+String(m+1).padStart(2,'0')+'-'+String(new Date(y,m+1,0).getDate()).padStart(2,'0');
+  return holidays.filter(h=>{
+    if(!h.stores.includes('전체')&&!(storeObj&&h.stores.includes(storeObj.name)))return false;
+    return h.start<=mEnd&&h.end>=mStart;
+  }).map(h=>{
+    const ss=getHolSetting(storeObj,h.id);
+    // holSettings가 있으면 그 값, 없으면 'none'(미설정)
+    return {...h,status:ss?ss.status:'none',open:ss?ss.open:'',close:ss?ss.close:''};
+  }).sort((a,b)=>a.start.localeCompare(b.start));
+}
+
+// ── 지점 카드 ──────────────────────────────────────────
+function renderStores(){
+  const g=document.getElementById('store-grid');g.innerHTML='';
+  const isAdmin=curUser&&curUser.role==='admin';
+  const vis=visStores();
+  if(!vis.length){g.innerHTML='<div class="loading">지점 정보가 없습니다.</div>';return;}
+  vis.forEach(s=>{
+    const st=sst(s);
+    const wds=['월','화','수','목','금'],we=['토','일'];
+    const wsc=wds.map(d=>s.schedule[d]),wec=we.map(d=>s.schedule[d]);
+    const wSame=wsc.every(d=>d.st===wsc[0].st&&d.o===wsc[0].o&&d.c===wsc[0].c);
+    const eSame=wec.every(d=>d.st===wec[0].st&&d.o===wec[0].o&&d.c===wec[0].c);
+    let rows='';
+    if(wSame&&eSame){
+      rows+=`<div class="hr"><span class="dl">평일</span><span>${wsc[0].st==='closed'?'휴무':wsc[0].o+' – '+wsc[0].c}</span></div>`;
+      rows+=`<div class="hr"><span class="dl">주말</span><span>${wec[0].st==='closed'?'휴무':wec[0].o+' – '+wec[0].c}</span></div>`;
+    } else {
+      DAYS.forEach(d=>{const ds=s.schedule[d];rows+=`<div class="hr"><span class="dl">${d}</span><span>${ds.st==='closed'?'휴무':ds.o+' – '+ds.c}</span></div>`;});
+    }
+    const mHols=getThisMonthHols(s);
+    let holSection='';
+    if(mHols.length){
+      const holRows=mHols.map(h=>{
+        const cl=h.status==='closed'?'cl':h.status==='modified'?'cm':h.status==='open'?'co':'';
+        const txt=h.status==='closed'?'휴무':h.status==='open'?'정상영업':h.status==='modified'?'시간변경 '+h.open+'–'+h.close:'미설정';
+        const dStr=h.start===h.end?h.start.slice(5)+' ('+DWS[new Date(h.start+'T00:00:00').getDay()]+')':h.start.slice(5)+'~'+h.end.slice(5);
+        return`<div class="hol-row"><span style="color:#888;min-width:75px;flex-shrink:0">${dStr}</span><span style="flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.name}</span><span class="hol-chip ${cl}">${txt}</span></div>`;
+      }).join('');
+      holSection=`<div class="hol-section"><div class="hol-section-label">이번 달 공휴일·임시공휴일</div>${holRows}</div>`;
+    }
+    const del=isAdmin?`<button class="eb danger" data-del-id="${s.id}"><i class="ti ti-trash" style="font-size:11px"></i></button>`:'';
+    g.innerHTML+=`<div class="sc">
+      <div class="sc-hd"><span class="sn"><i class="ti ti-building-store" style="font-size:12px"></i>${s.name}</span>${bdgHtml(st)}</div>
+      ${rows}${holSection}
+      <div style="margin-top:8px;display:flex;gap:5px">
+        <button class="eb" data-edit-id="${s.id}"><i class="ti ti-edit" style="font-size:11px"></i> 수정</button>${del}
+      </div>
+    </div>`;
+  });
+  g.querySelectorAll('[data-edit-id]').forEach(btn=>btn.addEventListener('click',()=>openEM(btn.dataset.editId)));
+  g.querySelectorAll('[data-del-id]').forEach(btn=>btn.addEventListener('click',()=>openDel(btn.dataset.delId)));
+}
+
+// ── 수정 모달 ──────────────────────────────────────────
+function openEM(id){
+  const s=stores.find(x=>x.id===id);if(!s)return;
+  editId=id;
+  const isAdmin=curUser&&curUser.role==='admin';
+  document.getElementById('em-title').textContent=s.name+' 수정';
+  document.getElementById('f-store-name').value=s.name;
+  document.getElementById('rename-btn').style.display=isAdmin?'':'none';
+  document.getElementById('f-reason').value='';
+  pickMode=false;selHolDates=[];
+  document.getElementById('pick-info').style.display='none';
+  document.getElementById('hol-mini-cal').style.display='none';
+  document.getElementById('pick-btn').innerHTML='<i class="ti ti-calendar" style="font-size:11px"></i> 달력에서 날짜 추가';
+  const wrap=document.getElementById('day-rows');wrap.innerHTML='';
+  DAYS.forEach(d=>{
+    const ds=s.schedule[d];
+    const row=document.createElement('div');row.className='day-row';
+    row.innerHTML=`<div class="day-chk"><input type="checkbox" id="chk-${d}" checked><label for="chk-${d}" style="cursor:pointer;font-weight:500">${d}요일</label></div>
+      <div class="tfl">
+        <select id="st-${d}"><option value="open"${ds.st==='open'?' selected':''}>영업</option><option value="closed"${ds.st==='closed'?' selected':''}>휴무</option></select>
+        <span id="tp-${d}" style="display:${ds.st==='closed'?'none':'flex'};align-items:center;gap:4px">
+          <input type="time" id="to-${d}" value="${ds.o}"><span style="color:#999">–</span><input type="time" id="tc-${d}" value="${ds.c}">
+        </span>
+      </div>`;
+    wrap.appendChild(row);
+    document.getElementById('st-'+d).addEventListener('change',function(){document.getElementById('tp-'+d).style.display=this.value==='closed'?'none':'flex';});
+  });
+  renderSelHolRows(s);
+  document.getElementById('em-modal').classList.add('open');
+}
+function closeEM(){document.getElementById('em-modal').classList.remove('open');pickMode=false;selHolDates=[];}
+
+function togglePickMode(){
+  pickMode=!pickMode;
+  document.getElementById('pick-info').style.display=pickMode?'flex':'none';
+  const cw=document.getElementById('hol-mini-cal');
+  if(pickMode){cw.style.display='block';renderMiniCal();}else cw.style.display='none';
+  document.getElementById('pick-btn').innerHTML=pickMode
+    ?'<i class="ti ti-x" style="font-size:11px"></i> 선택 취소'
+    :'<i class="ti ti-calendar" style="font-size:11px"></i> 달력에서 날짜 추가';
+}
+function renderMiniCal(){
+  const wrap=document.getElementById('hol-mini-cal');
+  const first=new Date(miniY,miniM,1).getDay(),total=new Date(miniY,miniM+1,0).getDate();
+  const today=new Date();today.setHours(0,0,0,0);
+  let h=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+    <button class="eb" id="mini-prev" style="padding:3px 8px"><i class="ti ti-chevron-left"></i></button>
+    <span style="font-size:13px;font-weight:600;flex:1;text-align:center">${miniY}년 ${miniM+1}월</span>
+    <button class="eb" id="mini-next" style="padding:3px 8px"><i class="ti ti-chevron-right"></i></button>
+  </div><div class="cal">`;
+  DWS.forEach(d=>h+=`<div class="cdow">${d}</div>`);
+  for(let i=0;i<first;i++)h+=`<div class="cday empty"></div>`;
+  for(let d=1;d<=total;d++){
+    const ds=`${miniY}-${String(miniM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isSel=selHolDates.includes(ds);
+    const isT=new Date(ds+'T00:00:00').toDateString()===today.toDateString();
+    const evs=holidays.filter(h2=>ds>=h2.start&&ds<=h2.end);
+    h+=`<div class="cday${isSel?' sel-hol':''}${isT?' today':''}" data-pick="${ds}"><div class="cdn">${d}</div>`;
+    evs.forEach(e=>{const cl='cl';h+=`<span class="ctag ${cl}">${e.name}</span>`;});
+    h+=`</div>`;
+  }
+  wrap.innerHTML=h+`</div>`;
+  wrap.querySelectorAll('[data-pick]').forEach(el=>el.addEventListener('click',()=>pickDay(el.dataset.pick)));
+  document.getElementById('mini-prev').addEventListener('click',()=>{miniM--;if(miniM<0){miniM=11;miniY--;}renderMiniCal();});
+  document.getElementById('mini-next').addEventListener('click',()=>{miniM++;if(miniM>11){miniM=0;miniY++;}renderMiniCal();});
+}
+function pickDay(ds){
+  if(!pickMode)return;
+  if(selHolDates.includes(ds))selHolDates=selHolDates.filter(x=>x!==ds);
+  else selHolDates.push(ds);
+  selHolDates.sort();
+  renderMiniCal();
+  const s=stores.find(x=>x.id===editId);
+  renderSelHolRows(s);
+}
+
+function renderSelHolRows(s){
+  const wrap=document.getElementById('sel-hol-rows');wrap.innerHTML='';
+  if(!s)return;
+  // 이 매장에 해당하는 공휴일
+  const stHols=holidays.filter(h=>h.stores.includes('전체')||h.stores.includes(s.name));
+  // 새로 선택한 날짜 중 기존 공휴일과 겹치지 않는 것
+  const existingDates=stHols.flatMap(h=>dateRange(h.start,h.end));
+  const newDates=selHolDates.filter(d=>!existingDates.includes(d));
+  // 기존 공휴일 (중복 제거)
+  const seenIds=new Set();
+  const deduped=[];
+  stHols.forEach(h=>{if(!seenIds.has(h.id)){seenIds.add(h.id);deduped.push(h);}});
+  // 새 임시공휴일
+  newDates.forEach(dt=>deduped.push({id:'new_'+dt,start:dt,end:dt,name:'임시공휴일',isNew:true}));
+  if(!deduped.length){wrap.innerHTML='<p style="font-size:11px;color:#999;padding:.3rem 0">등록된 공휴일이 없습니다.</p>';return;}
+  deduped.forEach(h=>{
+    const d=new Date(h.start+'T00:00:00');
+    const dStr=h.start===h.end?h.start.slice(5)+' ('+DWS[d.getDay()]+')':h.start.slice(5)+'~'+h.end.slice(5);
+    // 현재 저장된 설정 읽기
+    const ss=h.isNew?null:getHolSetting(s,h.id);
+    const curSt=ss?ss.status:'none';
+    const curO=ss?(ss.open||'12:00'):'12:00';
+    const curC=ss?(ss.close||'20:00'):'20:00';
+    const div=document.createElement('div');div.className='hol-inline';
+    div.innerHTML=`
+      <span style="min-width:90px;color:#999;font-size:11px;flex-shrink:0">${dStr}</span>
+      <span style="flex:1;font-size:11px;font-weight:500;color:${h.isNew?'#6c5ce7':'#333'}">${h.name}${h.isNew?' ✨':''}</span>
+      <select data-hid="${h.id}" class="hol-st-sel" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:7px;background:#fff;color:#1a1a1a;font-family:inherit;flex-shrink:0">
+        <option value="none"${curSt==='none'?' selected':''}>-- 선택 --</option>
+        <option value="closed"${curSt==='closed'?' selected':''}>휴무</option>
+        <option value="modified"${curSt==='modified'?' selected':''}>시간변경</option>
+        <option value="open"${curSt==='open'?' selected':''}>정상영업</option>
+      </select>
+      <span class="hol-time-wrap" style="display:${curSt==='modified'?'flex':'none'};align-items:center;gap:4px;flex-shrink:0">
+        <input type="time" class="hol-open" value="${curO}" style="font-size:11px;padding:3px 7px;border:1px solid #ddd;border-radius:7px;background:#fff;color:#1a1a1a;width:85px;font-family:inherit">
+        <span style="color:#999">–</span>
+        <input type="time" class="hol-close" value="${curC}" style="font-size:11px;padding:3px 7px;border:1px solid #ddd;border-radius:7px;background:#fff;color:#1a1a1a;width:85px;font-family:inherit">
+      </span>`;
+    const sel=div.querySelector('.hol-st-sel');
+    const timeWrap=div.querySelector('.hol-time-wrap');
+    sel.addEventListener('change',function(){timeWrap.style.display=this.value==='modified'?'flex':'none';});
+    wrap.appendChild(div);
+  });
+}
+
+async function renameStore(){
+  const s=stores.find(x=>x.id===editId);if(!s)return;
+  const n=document.getElementById('f-store-name').value.trim();
+  if(!n){toast('지점명을 입력하세요.');return;}
+  const old=s.name;if(old===n)return;
+  await db.ref('stores/'+s.id).update({name:n});
+  const usnap=await db.ref('users').once('value');
+  if(usnap.exists()){const upd={};Object.entries(usnap.val()).forEach(([uid,u])=>{if(u.store===old)upd['users/'+uid+'/store']=n;});if(Object.keys(upd).length)await db.ref().update(upd);}
+  const hsnap=await db.ref('holidays').once('value');
+  if(hsnap.exists()){const upd={};Object.entries(hsnap.val()).forEach(([hid,h])=>{if(h.stores&&h.stores.includes(old))upd['holidays/'+hid+'/stores']=h.stores.map(x=>x===old?n:x);});if(Object.keys(upd).length)await db.ref().update(upd);}
+  addLog('['+curUser.name+'] 지점명 변경: '+old+' → '+n);
+  toast('"'+old+'" → "'+n+'" 변경 완료');
+}
+
+async function saveStore(){
+  const s=stores.find(x=>x.id===editId);if(!s)return;
+  const changes=[];const schedUpd={};
+  DAYS.forEach(d=>{
+    if(!document.getElementById('chk-'+d).checked)return;
+    const st=document.getElementById('st-'+d).value;
+    const o=st==='closed'?'':document.getElementById('to-'+d).value;
+    const c2=st==='closed'?'':document.getElementById('tc-'+d).value;
+    const prev=s.schedule[d];
+    if(prev.st!==st||prev.o!==o||prev.c!==c2){
+      changes.push(d+': '+stLbl(prev.st)+'→'+stLbl(st)+(st!=='closed'?' ('+o+'~'+c2+')':''));
+      schedUpd['stores/'+s.id+'/schedule/'+d]={st,o,c:c2};
+    }
+  });
+  if(Object.keys(schedUpd).length)await db.ref().update(schedUpd);
+
+  // 공휴일 영업설정 저장 - class selector 사용으로 안정적
+  const rows=document.querySelectorAll('#sel-hol-rows .hol-inline');
+  for(const row of rows){
+    const sel=row.querySelector('.hol-st-sel');if(!sel)continue;
+    const hid=sel.dataset.hid;
+    const nst=sel.value;
+    if(nst==='none')continue;
+    const openEl=row.querySelector('.hol-open');
+    const closeEl=row.querySelector('.hol-close');
+    const no=nst==='modified'&&openEl?openEl.value:'';
+    const nc=nst==='modified'&&closeEl?closeEl.value:'';
+
+    if(hid.startsWith('new_')){
+      // 새 임시공휴일 생성
+      const dt=hid.replace('new_','');
+      const newId='h'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+      await db.ref('holidays/'+newId).set({id:newId,start:dt,end:dt,name:'임시공휴일',type:'임시공휴일',stores:[s.name]});
+      await db.ref('stores/'+s.id+'/holSettings/'+newId).set({status:nst,open:no,close:nc});
+      changes.push('임시공휴일 추가('+dt+'): '+stLbl(nst)+(nst==='modified'?' ('+no+'~'+nc+')':''));
+    } else {
+      // 기존 공휴일 설정
+      const h=holidays.find(x=>x.id===hid);if(!h)continue;
+      const prev=getHolSetting(s,hid)||{};
+      await db.ref('stores/'+s.id+'/holSettings/'+hid).set({status:nst,open:no,close:nc});
+      changes.push('공휴일 '+h.name+': '+stLbl(prev.status||'미설정')+'→'+stLbl(nst)+(nst==='modified'?' ('+no+'~'+nc+')':''));
+    }
+  }
+
+  const reason=document.getElementById('f-reason').value;
+  if(changes.length){
+    addLog('['+curUser.name+'] '+s.name+' 수정: '+changes.join(' / ')+(reason?' / 사유: '+reason:''));
+    toast('저장 완료! 실시간 반영됩니다.');
+  } else {
+    toast('변경 사항이 없습니다.');
+  }
+  closeEM();
+}
+
+function openDel(id){delId=id;const s=stores.find(x=>x.id===id);document.getElementById('del-msg').textContent='"'+(s?s.name:'')+'" 지점을 삭제하시겠습니까?';document.getElementById('del-modal').classList.add('open');}
+
+// ── 공휴일 현황 테이블 ─────────────────────────────────
+function renderHovTable(){
+  if(!curUser||curUser.role!=='admin')return;
+  const mStart=calY+'-'+String(calM+1).padStart(2,'0')+'-01';
+  const mEnd=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(new Date(calY,calM+1,0).getDate()).padStart(2,'0');
+  document.getElementById('hov-month-label').textContent=calY+'년 '+(calM+1)+'월';
+  const mHols=holidays.filter(h=>h.start<=mEnd&&h.end>=mStart).sort((a,b)=>a.start.localeCompare(b.start));
+  const storeNames=stores.map(s=>s.name);
+  if(!mHols.length){document.getElementById('hov-table').innerHTML='<tr><td colspan="999" style="padding:1rem;color:#999;text-align:center">이번 달 공휴일이 없습니다.</td></tr>';return;}
+  let thead='<thead><tr><th>날짜</th><th>공휴일명</th><th>유형</th>'+storeNames.map(n=>`<th style="white-space:nowrap">${n}</th>`).join('')+'</tr></thead>';
+  let tbody='<tbody>';
+  mHols.forEach(h=>{
+    const d1=new Date(h.start+'T00:00:00');
+    const dStr=h.start===h.end?h.start.slice(5)+' ('+DWS[d1.getDay()]+')':h.start.slice(5)+'~'+h.end.slice(5);
+    tbody+=`<tr><td style="font-weight:600;white-space:nowrap">${dStr}</td><td>${h.name}</td><td><span style="font-size:10px;padding:1px 6px;border-radius:20px;background:#f0f0ee;color:#888">${h.type}</span></td>`;
+    storeNames.forEach(sn=>{
+      const st=stores.find(x=>x.name===sn);
+      const applies=h.stores.includes('전체')||h.stores.includes(sn);
+      if(!applies){tbody+='<td style="color:#ccc;text-align:center">–</td>';return;}
+      const ss=getHolSetting(st,h.id);
+      const effSt=ss?ss.status:'none';
+      const cl=effSt==='closed'?'cl':effSt==='modified'?'cm':effSt==='open'?'co':'';
+      const txt=effSt==='closed'?'휴무':effSt==='open'?'정상':effSt==='modified'?(ss.open+'–'+ss.close):'미설정';
+      tbody+=`<td><span class="hol-chip ${cl}" style="${!cl?'color:#aaa;background:#f0f0ee':''}">${txt}</span></td>`;
+    });
+    tbody+='</tr>';
+  });
+  document.getElementById('hov-table').innerHTML=thead+tbody+'</tbody>';
+}
+
+// ── 공휴일 탭 ─────────────────────────────────────────
+function renderHol(){
+  document.getElementById('mtitle').textContent=calY+'년 '+(calM+1)+'월';
+  renderHovTable();
+  const wrap=document.getElementById('hol-body');
+  if(hView==='cal')renderHolCal(wrap);else renderHolList(wrap);
+}
+function renderHolCal(wrap){
+  const first=new Date(calY,calM,1).getDay(),total=new Date(calY,calM+1,0).getDate(),today=new Date();today.setHours(0,0,0,0);
+  let h='<div class="cal">';
+  DWS.forEach(d=>h+=`<div class="cdow">${d}</div>`);
+  for(let i=0;i<first;i++)h+=`<div class="cday empty"></div>`;
+  for(let d=1;d<=total;d++){
+    const ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const evs=holidays.filter(h2=>ds>=h2.start&&ds<=h2.end);
+    const isT=new Date(ds+'T00:00:00').toDateString()===today.toDateString();
+    h+=`<div class="cday${evs.length?' has-hol':''}${isT?' today':''}" data-cal="${ds}"><div class="cdn">${d}</div>`;
+    evs.forEach(e=>h+=`<span class="ctag cl">${e.name}</span>`);
+    h+=`</div>`;
+  }
+  wrap.innerHTML=h+`</div>`;
+  wrap.querySelectorAll('.has-hol').forEach(el=>el.addEventListener('click',()=>{
+    const evs=holidays.filter(h2=>el.dataset.cal>=h2.start&&el.dataset.cal<=h2.end);
+    if(evs.length)openEditHol(evs[0].id);
+  }));
+}
+function renderHolList(wrap){
+  const hols=holidays.filter(h=>{const ss=h.start.split('-').map(Number),ee=h.end.split('-').map(Number);return(ss[0]<calY||(ss[0]===calY&&ss[1]-1<=calM))&&(ee[0]>calY||(ee[0]===calY&&ee[1]-1>=calM));}).sort((a,b)=>a.start.localeCompare(b.start));
+  if(!hols.length){wrap.innerHTML=`<p style="font-size:13px;color:#999;padding:.5rem 0">${calY}년 ${calM+1}월 공휴일이 없습니다.</p>`;return;}
+  const sections=['전체',...stores.map(s=>s.name)];
+  let html='';
+  sections.forEach(sn=>{
+    const sh=hols.filter(h=>sn==='전체'?true:(h.stores.includes('전체')||h.stores.includes(sn)));
+    if(!sh.length)return;
+    const stObj=stores.find(x=>x.name===sn);
+    html+=`<div class="hol-sec"><div class="hol-sec-title"><i class="ti ti-building-store" style="font-size:13px"></i>${sn==='전체'?'전체 적용':sn}</div>
+    <div style="overflow-x:auto"><table class="ht"><thead><tr><th style="width:100px">날짜</th><th>이름</th><th style="width:80px">유형</th><th style="width:80px">영업</th><th style="width:90px">시간</th><th style="width:60px"></th></tr></thead>
+    <tbody>${sh.map(h=>{
+      const d1=new Date(h.start+'T00:00:00');
+      const dStr=h.start===h.end?h.start.slice(5)+' ('+DWS[d1.getDay()]+')':h.start.slice(5)+'~'+h.end.slice(5);
+      const ss=sn!=='전체'?getHolSetting(stObj,h.id):null;
+      const effSt=ss?ss.status:'매장별';
+      const stH=effSt==='closed'?'<span class="bdg bc2">휴무</span>':effSt==='modified'?'<span class="bdg bm">시간변경</span>':effSt==='open'?'<span class="bdg bo">정상</span>':'<span style="font-size:10px;color:#aaa">매장별</span>';
+      const hrs=ss&&effSt==='modified'?ss.open+'–'+ss.close:(ss&&effSt==='open'?'정상':'–');
+      return`<tr>
+        <td style="white-space:nowrap">
+          <button class="eb danger" data-del-hol="${h.id}" style="padding:2px 7px;margin-right:5px;font-size:12px;font-weight:700">✕</button>
+          ${dStr}
+        </td>
+        <td>${h.name}</td>
+        <td><span style="font-size:10px;padding:2px 7px;border-radius:20px;background:#f0f0ee;color:#888">${h.type}</span></td>
+        <td>${stH}</td><td>${hrs}</td>
+        <td><button class="eb" data-edit-hol="${h.id}">✏️</button></td>
+      </tr>`;
+    }).join('')}</tbody></table></div></div>`;
+  });
+  wrap.innerHTML=html;
+  wrap.querySelectorAll('[data-del-hol]').forEach(btn=>btn.addEventListener('click',(e)=>{e.stopPropagation();delHol(btn.dataset.delHol);}));
+  wrap.querySelectorAll('[data-edit-hol]').forEach(el=>el.addEventListener('click',(e)=>{e.stopPropagation();openEditHol(el.dataset.editHol);}));
+}
+
+// 공휴일 추가
+function openHM(){
+  buildChips('hf-chips',null);
+  document.getElementById('hf-s').value='';document.getElementById('hf-e').value='';document.getElementById('hf-name').value='';
+  document.getElementById('hm-modal').classList.add('open');
+}
+function buildChips(wrapId,initStores){
+  const w=document.getElementById(wrapId);w.innerHTML='';
+  const sel=new Set(initStores||['전체']);
+  const opts=['전체',...stores.map(s=>s.name)];
+  opts.forEach(n=>{
+    const btn=document.createElement('button');btn.className='chip'+(sel.has(n)?' sel':'');btn.textContent=n;
+    btn.addEventListener('click',function(){
+      if(n==='전체'){sel.clear();sel.add('전체');w.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',c.textContent==='전체'));return;}
+      sel.delete('전체');
+      if(sel.has(n)){sel.delete(n);this.classList.remove('sel');}else{sel.add(n);this.classList.add('sel');}
+      if(!sel.size)sel.add('전체');
+      w.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',sel.has(c.textContent)));
+    });
+    w.appendChild(btn);
+  });
+  w._getSel=()=>[...w.querySelectorAll('.chip.sel')].map(c=>c.textContent);
+}
+async function saveHol(){
+  const start=document.getElementById('hf-s').value,end=document.getElementById('hf-e').value||start,name=document.getElementById('hf-name').value;
+  if(!start||!name){toast('날짜와 이름을 입력하세요.');return;}
+  const stores2=document.getElementById('hf-chips')._getSel();
+  const newId='h'+Date.now();
+  await db.ref('holidays/'+newId).set({id:newId,start,end,name,type:document.getElementById('hf-type').value,stores:stores2});
+  addLog('['+curUser.name+'] 공휴일 추가: '+start+' '+name);
+  renderHol();document.getElementById('hm-modal').classList.remove('open');toast('추가되었습니다.');
+}
+async function delHol(id){
+  const h=holidays.find(x=>x.id===id);
+  await db.ref('holidays/'+id).remove();
+  addLog('['+curUser.name+'] 공휴일 삭제: '+(h?h.name:''));
+  renderHol();toast('삭제되었습니다.');
+}
+
+// 공휴일 수정
+function openEditHol(id){
+  const h=holidays.find(x=>x.id===id);if(!h)return;
+  editHolId=id;
+  document.getElementById('eh-name').value=h.name;
+  document.getElementById('eh-start').value=h.start;
+  document.getElementById('eh-end').value=h.end||h.start;
+  document.getElementById('eh-type').value=h.type;
+  buildChips('eh-chips',h.stores||['전체']);
+  document.getElementById('edit-hol-modal').classList.add('open');
+}
+async function saveEditHol(){
+  const h=holidays.find(x=>x.id===editHolId);if(!h)return;
+  const name=document.getElementById('eh-name').value.trim();
+  const start=document.getElementById('eh-start').value;
+  const end=document.getElementById('eh-end').value||start;
+  const type=document.getElementById('eh-type').value;
+  const stores2=document.getElementById('eh-chips')._getSel();
+  if(!name||!start){toast('이름과 날짜를 입력하세요.');return;}
+  await db.ref('holidays/'+editHolId).update({name,start,end,type,stores:stores2});
+  addLog('['+curUser.name+'] 공휴일 수정: '+h.name+' → '+name);
+  document.getElementById('edit-hol-modal').classList.remove('open');
+  renderHol();toast('수정되었습니다.');
+}
+
+// ── 계정 관리 ──────────────────────────────────────────
+function renderAccts(){
+  const admins=Object.entries(users).filter(([,u])=>u.role==='admin');
+  const staff=Object.entries(users).filter(([,u])=>u.role==='staff');
+  document.getElementById('admin-list').innerHTML=admins.map(([id,u])=>`
+    <div class="usr-row">
+      <div style="width:30px;height:30px;border-radius:50%;background:#d0e8ff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0d3d7a;flex-shrink:0">${u.name.slice(0,2)}</div>
+      <div style="flex:1"><div style="font-weight:600">${u.name}</div><div style="font-size:10px;color:#999">${id}</div></div>
+      <span class="bdg bad" style="margin-right:4px">관리자</span>
+      <button class="eb" data-edit-acct="${id}" style="margin-right:3px"><i class="ti ti-edit" style="font-size:11px"></i></button>
+      ${id!==curUser.id?`<button class="eb danger" data-del-acct="${id}"><i class="ti ti-trash" style="font-size:11px"></i></button>`:'<span style="font-size:10px;color:#aaa">(본인)</span>'}
+    </div>`).join('');
+  document.getElementById('staff-list').innerHTML=staff.map(([id,u])=>`
+    <div class="usr-row">
+      <div style="width:30px;height:30px;border-radius:50%;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#666;flex-shrink:0">${u.name.slice(0,2)}</div>
+      <div style="flex:1"><div style="font-weight:600">${u.name}</div><div style="font-size:10px;color:#999">${id} · ${u.store||'미지정'}</div></div>
+      <button class="eb" data-edit-acct="${id}" style="margin-right:3px"><i class="ti ti-edit" style="font-size:11px"></i></button>
+      <button class="eb danger" data-del-acct="${id}"><i class="ti ti-trash" style="font-size:11px"></i></button>
+    </div>`).join('');
+  document.querySelectorAll('[data-del-acct]').forEach(btn=>btn.addEventListener('click',()=>delAcct(btn.dataset.delAcct)));
+  document.querySelectorAll('[data-edit-acct]').forEach(btn=>btn.addEventListener('click',()=>openEditAcct(btn.dataset.editAcct)));
+}
+function openAddAcct(){
+  document.getElementById('ac-id').value='';document.getElementById('ac-pw').value='';document.getElementById('ac-name').value='';document.getElementById('ac-role').value='staff';
+  const sel=document.getElementById('ac-store');sel.innerHTML='<option value="">미지정</option>'+stores.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
+  document.getElementById('ac-store-wrap').style.display='';
+  document.getElementById('acct-modal').classList.add('open');
+}
+async function saveAcct(){
+  const id=document.getElementById('ac-id').value.trim(),pw=document.getElementById('ac-pw').value,name=document.getElementById('ac-name').value.trim(),role=document.getElementById('ac-role').value,store=role==='admin'?null:document.getElementById('ac-store').value||null;
+  if(!id||!pw||!name){toast('모든 항목을 입력하세요.');return;}
+  if(users[id]){toast('이미 존재하는 아이디입니다.');return;}
+  await db.ref('users/'+id).set({pw,name,role,store});
+  addLog('['+curUser.name+'] 계정 추가: '+id+' ('+name+')');
+  renderAccts();document.getElementById('acct-modal').classList.remove('open');toast('"'+id+'" 계정이 추가되었습니다.');
+}
+function openEditAcct(id){
+  const u=users[id];if(!u)return;
+  document.getElementById('ea-id').value=id;document.getElementById('ea-name').value=u.name;document.getElementById('ea-pw').value='';document.getElementById('ea-role').value=u.role;
+  const storeWrap=document.getElementById('ea-store-wrap');storeWrap.style.display=u.role==='admin'?'none':'';
+  const sel=document.getElementById('ea-store');sel.innerHTML='<option value="">미지정</option>'+stores.map(s=>`<option value="${s.name}"${u.store===s.name?' selected':''}>${s.name}</option>`).join('');
+  document.getElementById('edit-acct-title').textContent=(id===curUser.id?'내 계정 수정':'계정 수정')+' — '+id;
+  document.getElementById('edit-acct-modal').classList.add('open');
+}
+async function saveEditAcct(){
+  const id=document.getElementById('ea-id').value,name=document.getElementById('ea-name').value.trim(),pw=document.getElementById('ea-pw').value,role=document.getElementById('ea-role').value,store=role==='admin'?null:document.getElementById('ea-store').value||null;
+  if(!name){toast('이름을 입력하세요.');return;}
+  const upd={name,role,store};if(pw)upd.pw=pw;
+  await db.ref('users/'+id).update(upd);
+  if(id===curUser.id){curUser.name=name;curUser.role=role;curUser.store=store;document.getElementById('uname').textContent=name+' ';}
+  addLog('['+curUser.name+'] 계정 수정: '+id);
+  document.getElementById('edit-acct-modal').classList.remove('open');renderAccts();toast('"'+id+'" 계정이 수정되었습니다.');
+}
+async function delAcct(id){
+  if(id===curUser.id){toast('본인 계정은 삭제할 수 없습니다.');return;}
+  const u=users[id];await db.ref('users/'+id).remove();
+  addLog('['+curUser.name+'] 계정 삭제: '+id+(u?' ('+u.name+')':''));
+  renderAccts();toast('계정이 삭제되었습니다.');
+}
+
+// ── 변경 이력 ──────────────────────────────────────────
+function renderLog(){
+  const el=document.getElementById('log-list');
+  const isAdmin=curUser&&curUser.role==='admin';
+  const adminBtns=document.getElementById('log-admin-btns');
+  if(adminBtns)adminBtns.style.display=isAdmin?'flex':'none';
+  let logs=auditLog.slice();
+  if(!isAdmin&&curUser&&curUser.store)logs=logs.filter(l=>l.msg.includes(curUser.store));
+  if(!logs.length){el.innerHTML='<p style="font-size:13px;color:#999;padding:.5rem 0">변경 이력이 없습니다.</p>';return;}
+  if(isAdmin){
+    el.innerHTML=logs.slice().reverse().map(l=>`<div class="li" style="align-items:center">
+      <input type="checkbox" class="log-chk" data-key="${l.ts}" style="width:14px;height:14px;margin-right:6px;flex-shrink:0;accent-color:#1a1a1a;cursor:pointer">
+      <span class="lt">${l.time}</span><span style="flex:1">${l.msg}</span></div>`).join('');
+  } else {
+    el.innerHTML=logs.slice().reverse().map(l=>`<div class="li"><span class="lt">${l.time}</span><span style="flex:1">${l.msg}</span></div>`).join('');
+  }
+}
+async function clearLog(){await db.ref('log').remove();addLog('['+curUser.name+'] 변경 이력 전체 삭제');document.getElementById('log-del-modal').classList.remove('open');toast('삭제되었습니다.');}
+async function delSelectedLogs(){
+  const checked=document.querySelectorAll('.log-chk:checked');
+  if(!checked.length){toast('삭제할 항목을 선택하세요.');return;}
+  const upd={};checked.forEach(c=>upd['log/l'+c.dataset.key]=null);
+  await db.ref().update(upd);addLog('['+curUser.name+'] 변경 이력 '+checked.length+'건 삭제');toast(checked.length+'건 삭제되었습니다.');
+}
+function toggleSelectAllLogs(){
+  const chks=document.querySelectorAll('.log-chk');const allChecked=[...chks].every(c=>c.checked);
+  chks.forEach(c=>c.checked=!allChecked);
+  document.getElementById('select-all-log-btn').innerHTML=(!allChecked?'<i class="ti ti-square" style="font-size:11px"></i> 전체 해제':'<i class="ti ti-checkbox" style="font-size:11px"></i> 전체 선택');
+}
+
+// ── 이벤트 바인딩 ──────────────────────────────────────
+document.getElementById('login-btn').addEventListener('click',doLogin);
+document.getElementById('li-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('logout-btn').addEventListener('click',doLogout);
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',function(){swTab(this.dataset.tab);}));
+document.getElementById('close-em-btn').addEventListener('click',closeEM);
+document.getElementById('save-store-btn').addEventListener('click',saveStore);
+document.getElementById('rename-btn').addEventListener('click',renameStore);
+document.getElementById('pick-btn').addEventListener('click',togglePickMode);
+document.getElementById('prev-month').addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--;}renderHol();});
+document.getElementById('next-month').addEventListener('click',()=>{calM++;if(calM>11){calM=0;calY++;}renderHol();});
+document.getElementById('vca').addEventListener('click',()=>{hView='cal';renderHol();});
+document.getElementById('vli').addEventListener('click',()=>{hView='list';renderHol();});
+document.getElementById('add-hol-btn').addEventListener('click',openHM);
+document.getElementById('close-hm-btn').addEventListener('click',()=>document.getElementById('hm-modal').classList.remove('open'));
+document.getElementById('save-hol-btn').addEventListener('click',saveHol);
+document.getElementById('close-del-btn').addEventListener('click',()=>{document.getElementById('del-modal').classList.remove('open');delId=null;});
+document.getElementById('conf-del-btn').addEventListener('click',async()=>{
+  const s=stores.find(x=>x.id===delId);await db.ref('stores/'+delId).remove();
+  addLog('['+curUser.name+'] '+(s?s.name:'')+' 지점 삭제');
+  document.getElementById('del-modal').classList.remove('open');delId=null;toast('삭제되었습니다.');
+});
+document.getElementById('add-acct-btn').addEventListener('click',openAddAcct);
+document.getElementById('close-am-btn').addEventListener('click',()=>document.getElementById('acct-modal').classList.remove('open'));
+document.getElementById('save-acct-btn').addEventListener('click',saveAcct);
+document.getElementById('ac-role').addEventListener('change',function(){document.getElementById('ac-store-wrap').style.display=this.value==='admin'?'none':'';});
+document.getElementById('close-edit-acct-btn').addEventListener('click',()=>document.getElementById('edit-acct-modal').classList.remove('open'));
+document.getElementById('save-edit-acct-btn').addEventListener('click',saveEditAcct);
+document.getElementById('ea-role').addEventListener('change',function(){document.getElementById('ea-store-wrap').style.display=this.value==='admin'?'none':'';});
+document.getElementById('close-edit-hol-btn').addEventListener('click',()=>document.getElementById('edit-hol-modal').classList.remove('open'));
+document.getElementById('save-edit-hol-btn').addEventListener('click',saveEditHol);
+document.getElementById('del-edit-hol-btn').addEventListener('click',async()=>{
+  if(!editHolId)return;
+  const h=holidays.find(x=>x.id===editHolId);
+  if(!confirm('"'+(h?h.name:'')+'"
+삭제하시겠습니까?'))return;
+  await db.ref('holidays/'+editHolId).remove();
+  addLog('['+curUser.name+'] 공휴일 삭제: '+(h?h.name:''));
+  document.getElementById('edit-hol-modal').classList.remove('open');
+  renderHol();toast('삭제되었습니다.');
+});
+document.getElementById('clear-log-btn').addEventListener('click',()=>document.getElementById('log-del-modal').classList.add('open'));
+document.getElementById('close-log-del-btn').addEventListener('click',()=>document.getElementById('log-del-modal').classList.remove('open'));
+document.getElementById('conf-log-del-btn').addEventListener('click',clearLog);
+document.getElementById('del-sel-log-btn').addEventListener('click',delSelectedLogs);
+document.getElementById('select-all-log-btn').addEventListener('click',toggleSelectAllLogs);
+initDB().then(()=>listenData());
+</script>
+</body>
+</html>
