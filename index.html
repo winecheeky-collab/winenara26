@@ -411,11 +411,16 @@ function getHolSetting(store,holId){
 }
 
 // ── 로그인 ────────────────────────────────────────────
-function doLogin(){
+async function doLogin(){
   const id=document.getElementById('li-id').value.trim();
   const pw=document.getElementById('li-pw').value;
-  const u=users[id];
+  if(!id||!pw){document.getElementById('lerr').textContent='아이디와 비밀번호를 입력하세요.';return;}
+  document.getElementById('lerr').textContent='확인 중...';
+  // Firebase에서 직접 읽기 (캐시 문제 방지)
+  const snap=await db.ref('users/'+id).once('value');
+  const u=snap.exists()?snap.val():null;
   if(!u||u.pw!==pw){document.getElementById('lerr').textContent='아이디 또는 비밀번호가 올바르지 않습니다.';return;}
+  users[id]=u; // 로컬 캐시 업데이트
   curUser={id,name:u.name,role:u.role,store:u.store||null};
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
