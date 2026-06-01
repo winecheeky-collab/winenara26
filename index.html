@@ -360,7 +360,7 @@ const DEFAULT_HOLIDAYS=[
   {id:'h2026_12',start:'2026-12-25',end:'2026-12-25',name:'크리스마스',type:'공휴일',stores:['전체']},
 ];
 
-// ── 상태 ──────────────────────────────────────────────
+//
 // stores[i].holSettings = { holId: {status,open,close} }
 // 공휴일별 매장 영업여부는 stores 안에 holSettings로 저장
 let stores=[],holidays=[],users={},auditLog=[];
@@ -370,7 +370,7 @@ let selSt=new Set(['전체']),pickMode=false,selHolDates=[];
 let miniY=new Date().getFullYear(),miniM=new Date().getMonth();
 let editHolId=null;
 
-// ── DB ────────────────────────────────────────────────
+//
 async function initDB(){
   const s=await db.ref('stores').once('value');
   if(!s.exists()){const o={};DEFAULT_STORES.forEach(x=>o[x.id]=x);await db.ref('stores').set(o);}
@@ -397,7 +397,7 @@ function listenData(){
 }
 function addLog(msg){const ts=Date.now();db.ref('log/l'+ts).set({time:new Date().toLocaleString('ko-KR',{hour12:false}),msg,ts});}
 
-// ── 유틸 ──────────────────────────────────────────────
+//
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function stLbl(v){return v==='open'?'정상영업':v==='closed'?'휴무':v==='modified'?'시간변경':'미설정';}
 function bdgHtml(st){return st==='open'?'<span class="bdg bo">정상영업</span>':st==='closed'?'<span class="bdg bc2">휴무</span>':'<span class="bdg bm">시간변경</span>';}
@@ -410,7 +410,7 @@ function getHolSetting(store,holId){
   return store&&store.holSettings&&store.holSettings[holId]||null;
 }
 
-// ── 로그인 ────────────────────────────────────────────
+//
 async function doLogin(){
   const id=document.getElementById('li-id').value.trim();
   const pw=document.getElementById('li-pw').value;
@@ -458,7 +458,7 @@ function updSum(){
   document.getElementById('m3').textContent=vis.filter(s=>sst(s)==='closed').length;
 }
 
-// ── 이번 달 공휴일 (매장별 설정 포함) ─────────────────
+//
 function getThisMonthHols(storeObj){
   const today=new Date();
   const y=today.getFullYear(),m=today.getMonth();
@@ -474,7 +474,7 @@ function getThisMonthHols(storeObj){
   }).sort((a,b)=>a.start.localeCompare(b.start));
 }
 
-// ── 지점 카드 ──────────────────────────────────────────
+//
 function renderStores(){
   const g=document.getElementById('store-grid');g.innerHTML='';
   const isAdmin=curUser&&curUser.role==='admin';
@@ -517,7 +517,7 @@ function renderStores(){
   g.querySelectorAll('[data-del-id]').forEach(btn=>btn.addEventListener('click',()=>openDel(btn.dataset.delId)));
 }
 
-// ── 수정 모달 ──────────────────────────────────────────
+//
 function openEM(id){
   const s=stores.find(x=>x.id===id);if(!s)return;
   editId=id;
@@ -708,7 +708,7 @@ async function saveStore(){
 
 function openDel(id){delId=id;const s=stores.find(x=>x.id===id);document.getElementById('del-msg').textContent='"'+(s?s.name:'')+'" 지점을 삭제하시겠습니까?';document.getElementById('del-modal').classList.add('open');}
 
-// ── 공휴일 현황 테이블 ─────────────────────────────────
+//
 function renderHovTable(){
   if(!curUser||curUser.role!=='admin')return;
   const mStart=calY+'-'+String(calM+1).padStart(2,'0')+'-01';
@@ -738,7 +738,7 @@ function renderHovTable(){
   document.getElementById('hov-table').innerHTML=thead+tbody+'</tbody>';
 }
 
-// ── 공휴일 탭 ─────────────────────────────────────────
+//
 function renderHol(){
   document.getElementById('mtitle').textContent=calY+'년 '+(calM+1)+'월';
   renderHovTable();
@@ -863,7 +863,7 @@ async function saveEditHol(){
   renderHol();toast('수정되었습니다.');
 }
 
-// ── 계정 관리 ──────────────────────────────────────────
+//
 function renderAccts(){
   const admins=Object.entries(users).filter(([,u])=>u.role==='admin');
   const staff=Object.entries(users).filter(([,u])=>u.role==='staff');
@@ -923,7 +923,7 @@ async function delAcct(id){
   renderAccts();toast('계정이 삭제되었습니다.');
 }
 
-// ── 변경 이력 ──────────────────────────────────────────
+//
 function renderLog(){
   const el=document.getElementById('log-list');
   const isAdmin=curUser&&curUser.role==='admin';
@@ -953,7 +953,7 @@ function toggleSelectAllLogs(){
   document.getElementById('select-all-log-btn').innerHTML=(!allChecked?'<i class="ti ti-square" style="font-size:11px"></i> 전체 해제':'<i class="ti ti-checkbox" style="font-size:11px"></i> 전체 선택');
 }
 
-// ── 이벤트 바인딩 ──────────────────────────────────────
+//
 document.getElementById('login-btn').addEventListener('click',doLogin);
 document.getElementById('li-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('logout-btn').addEventListener('click',doLogout);
