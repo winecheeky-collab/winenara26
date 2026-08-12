@@ -358,6 +358,18 @@ const DEFAULT_HOLIDAYS=[
   {id:'h2026_10',start:'2026-10-03',end:'2026-10-03',name:'개천절',type:'공휴일',stores:['전체']},
   {id:'h2026_11',start:'2026-10-09',end:'2026-10-09',name:'한글날',type:'공휴일',stores:['전체']},
   {id:'h2026_12',start:'2026-12-25',end:'2026-12-25',name:'크리스마스',type:'공휴일',stores:['전체']},
+  // 2027 공휴일
+  {id:'h2027_1', start:'2027-01-01',end:'2027-01-01',name:'신정',type:'공휴일',stores:['전체']},
+  {id:'h2027_2', start:'2027-02-17',end:'2027-02-19',name:'설날 연휴',type:'연휴',stores:['전체']},
+  {id:'h2027_3', start:'2027-03-01',end:'2027-03-01',name:'삼일절',type:'공휴일',stores:['전체']},
+  {id:'h2027_4', start:'2027-05-05',end:'2027-05-05',name:'어린이날',type:'공휴일',stores:['전체']},
+  {id:'h2027_5', start:'2027-05-13',end:'2027-05-13',name:'부처님오신날',type:'공휴일',stores:['전체']},
+  {id:'h2027_6', start:'2027-06-06',end:'2027-06-06',name:'현충일',type:'공휴일',stores:['전체']},
+  {id:'h2027_7', start:'2027-08-15',end:'2027-08-15',name:'광복절',type:'공휴일',stores:['전체']},
+  {id:'h2027_8', start:'2027-09-14',end:'2027-09-16',name:'추석 연휴',type:'연휴',stores:['전체']},
+  {id:'h2027_9', start:'2027-10-03',end:'2027-10-03',name:'개천절',type:'공휴일',stores:['전체']},
+  {id:'h2027_10',start:'2027-10-09',end:'2027-10-09',name:'한글날',type:'공휴일',stores:['전체']},
+  {id:'h2027_11',start:'2027-12-25',end:'2027-12-25',name:'크리스마스',type:'공휴일',stores:['전체']},
 ];
 
 //
@@ -596,8 +608,16 @@ function pickDay(ds){
 function renderSelHolRows(s){
   const wrap=document.getElementById('sel-hol-rows');wrap.innerHTML='';
   if(!s)return;
-  // 이 매장에 해당하는 공휴일
-  const stHols=holidays.filter(h=>h.stores.includes('전체')||h.stores.includes(s.name));
+  // 오늘 기준 30일 전부터 ~ 연말까지 (올해 남은 공휴일)
+  const today=new Date();today.setHours(0,0,0,0);
+  const cutoff=new Date(today);cutoff.setDate(cutoff.getDate()-30);
+  const cutoffStr=cutoff.toISOString().slice(0,10);
+  const yearEnd=today.getFullYear()+'-12-31';
+  // 이 매장에 해당하는 오늘 이후 공휴일 (올해 말까지)
+  const stHols=holidays.filter(h=>{
+    if(!h.stores.includes('전체')&&!h.stores.includes(s.name))return false;
+    return h.end>=cutoffStr && h.start<=yearEnd;
+  }).sort((a,b)=>a.start.localeCompare(b.start));
   // 새로 선택한 날짜 중 기존 공휴일과 겹치지 않는 것
   const existingDates=stHols.flatMap(h=>dateRange(h.start,h.end));
   const newDates=selHolDates.filter(d=>!existingDates.includes(d));
@@ -618,7 +638,8 @@ function renderSelHolRows(s){
     const curC=ss?(ss.close||'20:00'):'20:00';
     const div=document.createElement('div');div.className='hol-inline';
     div.innerHTML=`
-      <span style="min-width:90px;color:#999;font-size:11px;flex-shrink:0">${dStr}</span>
+      <button class="eb danger" data-del-hid="${h.id}" style="padding:1px 8px;font-size:13px;font-weight:900;flex-shrink:0;margin-right:4px">x</button>
+      <span style="min-width:80px;color:#999;font-size:11px;flex-shrink:0">${dStr}</span>
       <span style="flex:1;font-size:11px;font-weight:500;color:${h.isNew?'#6c5ce7':'#333'}">${h.name}${h.isNew?' ✨':''}</span>
       <select data-hid="${h.id}" class="hol-st-sel" style="font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:7px;background:#fff;color:#1a1a1a;font-family:inherit;flex-shrink:0">
         <option value="none"${curSt==='none'?' selected':''}>-- 선택 --</option>
@@ -634,6 +655,25 @@ function renderSelHolRows(s){
     const sel=div.querySelector('.hol-st-sel');
     const timeWrap=div.querySelector('.hol-time-wrap');
     sel.addEventListener('change',function(){timeWrap.style.display=this.value==='modified'?'flex':'none';});
+    // x 버튼 삭제
+    const delBtn=div.querySelector('[data-del-hid]');
+    if(delBtn){
+      const hRef=h;const sRef=s;
+      delBtn.addEventListener('click',async function(){
+        const hid=this.dataset.delHid;
+        if(hid.startsWith('new_')){
+          const dt=hid.replace('new_','');
+          selHolDates=selHolDates.filter(d=>d!==dt);
+          renderSelHolRows(sRef);
+        } else {
+          if(!confirm('이 공휴일을 삭제하시겠습니까?'))return;
+          await db.ref('holidays/'+hid).remove();
+          addLog('['+curUser.name+'] 공휴일 삭제: '+(hRef?hRef.name:''));
+          renderSelHolRows(sRef);
+          toast('삭제되었습니다.');
+        }
+      });
+    }
     wrap.appendChild(div);
   });
 }
@@ -987,8 +1027,8 @@ document.getElementById('save-edit-hol-btn').addEventListener('click',saveEditHo
 document.getElementById('del-edit-hol-btn').addEventListener('click',async()=>{
   if(!editHolId)return;
   const h=holidays.find(x=>x.id===editHolId);
-      if(!confirm('\'' + (h ? h.name : '') + '\' 삭제하시겠습니까?'))return;
-
+  if(!confirm('"'+(h?h.name:'')+'"
+삭제하시겠습니까?'))return;
   await db.ref('holidays/'+editHolId).remove();
   addLog('['+curUser.name+'] 공휴일 삭제: '+(h?h.name:''));
   document.getElementById('edit-hol-modal').classList.remove('open');
